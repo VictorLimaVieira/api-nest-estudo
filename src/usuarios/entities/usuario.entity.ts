@@ -14,6 +14,9 @@ email: string;
 
 @Column({ default: true})
 ativo: boolean;
+
+@Column() 
+senha: string;
 }
 
 
