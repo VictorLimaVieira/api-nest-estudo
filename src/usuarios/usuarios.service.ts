@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -21,6 +22,14 @@ export class UsuariosService {
       throw new ConflictException('Este e-mail já está cadastrado no sistema');
     }
 
+    // 2. NOVO: Criptografa a senha antes de criar o usuário
+    // O número 10 é o "custo" (salt), quanto maior, mais seguro e mais lento.
+    const salt = 10;
+    const senhaHash = await bcrypt.hash(createUsuarioDto.senha, salt);
+
+    createUsuarioDto.senha = senhaHash;
+
+    // 4. Salva o usuário (agora com a senha protegida)
     const usuario = this.usuarioRepository.create(createUsuarioDto);
     const usuarioSalvo = await this.usuarioRepository.save(usuario);
 
