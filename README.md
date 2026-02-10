@@ -1,6 +1,6 @@
 #  Projeto Backend Victor  - API Backend
 
-> API RESTful desenvolvida para promover a inclusão digital, focada em segurança, escalabilidade e documentação clara. CORREÇÃO: Estou usando essa API de treino para o projeto real.
+> API RESTful desenvolvida para promover a inclusão digital, focada em segurança, escalabilidade e documentação clara. 
 
 Este projeto é o backend da plataforma "Idoso Conectado". Ele gerencia o cadastro de usuários aplicando regras de negócio estritas, criptografia de dados sensíveis e validação automática.
 
