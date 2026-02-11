@@ -1,22 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+// Importe o Medicamento usando o caminho relativo (pontinhos)
+import { Medicamento } from '../../medicamentos/entities/medicamento.entity';
 
-@Entity() // Diz pro TypeORM: "Isso é uma tabela no banco!"
+@Entity('usuarios')
 export class Usuario {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @PrimaryGeneratedColumn('uuid') // Gera um ID único mundial
-id: string;
+  @Column()
+  nome: string;
 
-@Column()
-nome: string;
+  @Column({ unique: true })
+  email: string;
 
-@Column({unique: true})
-email: string;
+  @Column({ default: true })
+  ativo: boolean;
 
-@Column({ default: true})
-ativo: boolean;
+  @Column()
+  senha: string;
 
-@Column() 
-senha: string;
+  // Um usuário para muitos medicamentos
+  @OneToMany(() => Medicamento, (medicamento) => medicamento.usuario)
+  medicamentos: Medicamento[];
 }
-
-
