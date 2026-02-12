@@ -1,20 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common'; // Adicionei o Request aqui
 import { MedicamentosService } from './medicamentos.service';
 import { CreateMedicamentoDto } from './dto/create-medicamento.dto';
 import { UpdateMedicamentoDto } from './dto/update-medicamento.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('medicamentos')
 export class MedicamentosController {
   constructor(private readonly medicamentosService: MedicamentosService) {}
 
   @Post()
-  create(@Body() createMedicamentoDto: CreateMedicamentoDto) {
-    return this.medicamentosService.create(createMedicamentoDto);
+  async create(@Body() createMedicamentoDto: CreateMedicamentoDto, @Request() req) {
+    // Corrigido: era createMedicamentoDto, não dot. E passamos o req.user.id
+    return await this.medicamentosService.create(createMedicamentoDto, req.user.id);
   }
 
   @Get()
-  findAll() {
-    return this.medicamentosService.findAll();
+  async findAll(@Request() req) {
+    // Agora o Service recebe o ID do usuário logado
+    return await this.medicamentosService.findAll(req.user.id);
   }
 
   @Get(':id')
@@ -26,7 +30,6 @@ export class MedicamentosController {
   async update(@Param('id') id: string, @Body() updateMedicamentoDto: UpdateMedicamentoDto) {
     return await this.medicamentosService.update(id, updateMedicamentoDto);
   }
-  
 
   @Delete(':id')
   async remove(@Param('id') id: string) {

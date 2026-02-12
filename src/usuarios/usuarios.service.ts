@@ -14,31 +14,34 @@ export class UsuariosService {
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto) {
-    const emailExiste = await this.usuarioRepository.findOne({
-      where: { email: createUsuarioDto.email },
-    });
+    const { senha, email } = createUsuarioDto;
 
-    if (emailExiste) {
-      throw new ConflictException('Este e-mail já está cadastrado no sistema');
+    const usuarioExiste = await this.usuarioRepository.findOneBy({ email });
+    if (usuarioExiste) {
+      throw new ConflictException('Este e-mail já está cadastrado.');
     }
-
-    // 2. NOVO: Criptografa a senha antes de criar o usuário
-    // O número 10 é o "custo" (salt), quanto maior, mais seguro e mais lento.
-    const salt = 10;
-    const senhaHash = await bcrypt.hash(createUsuarioDto.senha, salt);
-
-    createUsuarioDto.senha = senhaHash;
-
-    // 4. Salva o usuário (agora com a senha protegida)
-    const usuario = this.usuarioRepository.create(createUsuarioDto);
-    const usuarioSalvo = await this.usuarioRepository.save(usuario);
-
-    // Usamos o 'any' aqui para o TypeScript não reclamar do delete
-    const retorno = usuarioSalvo as any;
-    delete retorno.senha;
     
-    return retorno;
+    // criptografar a senha:
+    const salt = await bcrypt.genSalt(10);
+    const senhaCriptografada = await bcrypt.hash(senha, salt);
+
+    // salvar usuario com senha protegida
+    const novoUsuario = this.usuarioRepository.create({
+      ...createUsuarioDto,
+      senha: senhaCriptografada,
+    });
+    
+    return await this.usuarioRepository.save(novoUsuario);
   }
+
+  // --- NOVO MÉTODO PARA O LOGIN ---
+ async findByEmail(email: string): Promise<Usuario | null> {
+  return await this.usuarioRepository.findOne({ 
+    where: { email },
+    select: ['id', 'nome', 'email', 'senha'] // O 'senha' aqui é vital!
+  });
+}
+  // --------------------------------
 
   async findAll() {
     const usuarios = await this.usuarioRepository.find();

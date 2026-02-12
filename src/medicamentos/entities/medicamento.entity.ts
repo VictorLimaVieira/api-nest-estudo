@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-// Importe o Usuario usando o caminho relativo (pontinhos)
 import { Usuario } from '../../usuarios/entities/usuario.entity';
 
 @Entity('medicamentos')
@@ -19,4 +18,7 @@ export class Medicamento {
   // Muitos medicamentos para um usuário
   @ManyToOne(() => Usuario, (usuario) => usuario.medicamentos)
   usuario: Usuario;
+
+  // src/usuarios/entities/usuario.entity.ts
+
 }

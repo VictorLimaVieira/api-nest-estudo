@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { Usuario } from './usuarios/entities/usuario.entity';
 import { MedicamentosModule } from './medicamentos/medicamentos.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { MedicamentosModule } from './medicamentos/medicamentos.module';
     }),
     UsuariosModule,
     MedicamentosModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -15,36 +15,35 @@ export class MedicamentosService {
     private usuarioRepository: Repository<Usuario>,
   ) {}
 
-  async create(createMedicamentoDto: CreateMedicamentoDto) {
-    const { usuarioId, nome } = createMedicamentoDto;
-
-    // 1. Verifica se o usuário dono do remédio existe no banco
+  async create(createMedicamentoDto: CreateMedicamentoDto, usuarioId: string) {
+    const { nome } = createMedicamentoDto;
     const usuario = await this.usuarioRepository.findOneBy({ id: usuarioId });
+
     if (!usuario) {
-      throw new NotFoundException('Usuário não encontrado para este medicamento.');
+      throw new NotFoundException('Usuário não encontrado');
     }
 
-    // 2. Verifica se este usuário já cadastrou um remédio com este mesmo nome
     const jaExiste = await this.medicamentoRepository.findOne({
       where: { nome, usuario: { id: usuarioId } },
     });
+    
     if (jaExiste) {
       throw new ConflictException('Você já cadastrou este medicamento!');
     }
 
-    // 3. Cria o objeto do medicamento associando ao objeto do usuário
     const novoMedicamento = this.medicamentoRepository.create({
-      ...createMedicamentoDto,
-      usuario,
+      nome: createMedicamentoDto.nome,
+      dosagem: createMedicamentoDto.dosagem,
+      horario: createMedicamentoDto.horario,
+      usuario: usuario,
     });
 
-    // 4. Salva permanentemente no banco de dados
-    return this.medicamentoRepository.save(novoMedicamento);
+    return await this.medicamentoRepository.save(novoMedicamento);
   }
 
-  async findAll() {
+  async findAll(usuarioId: string) {
     return await this.medicamentoRepository.find({
-      relations: ['usuario'], // Isso faz aparecer os dados do dono no GET
+      where: { usuario: { id: usuarioId } },
     });
   }
 

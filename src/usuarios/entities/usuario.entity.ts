@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-// Importe o Medicamento usando o caminho relativo (pontinhos)
 import { Medicamento } from '../../medicamentos/entities/medicamento.entity';
 
 @Entity('usuarios')
@@ -16,7 +15,7 @@ export class Usuario {
   @Column({ default: true })
   ativo: boolean;
 
-  @Column()
+  @Column({select: false})
   senha: string;
 
   // Um usuário para muitos medicamentos
