@@ -6,10 +6,10 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // 1. Libera o acesso para o Front-end
+  // 1. Libera o acesso para o Front-end (Correto!)
   app.enableCors();
 
-  // 2. Configura a validação global (Deve vir ANTES do listen)
+  // 2. Configura a validação global
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
     whitelist: true,
@@ -21,13 +21,13 @@ async function bootstrap() {
     .setTitle('API Idoso Conectado')
     .setDescription('Documentação da API para o projeto de inclusão digital')
     .setVersion('1.0')
-    .addBearerAuth() // ADICIONE ISSO: Cria o botão de cadeado para o Token no Swagger
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // 4. SÓ AGORA liga o servidor (Uma única vez no final)
-  await app.listen(3000);
+  // 🚨 4. MUDANÇA AQUI: Ouve a porta que a Render mandar OU a 3000 se for local
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
